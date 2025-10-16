@@ -14,7 +14,126 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      menus: {
+        Row: {
+          available: boolean | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          image_url: string | null
+          name: string
+          price: number
+        }
+        Insert: {
+          available?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: never
+          image_url?: string | null
+          name: string
+          price: number
+        }
+        Update: {
+          available?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: never
+          image_url?: string | null
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          id: number
+          menu_id: number
+          menu_name: string
+          order_id: number
+          quantity: number
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          id?: never
+          menu_id: number
+          menu_name: string
+          order_id: number
+          quantity: number
+          subtotal: number
+          unit_price: number
+        }
+        Update: {
+          id?: never
+          menu_id?: number
+          menu_name?: string
+          order_id?: number
+          quantity?: number
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          event_date: string
+          id: number
+          notes: string | null
+          order_date: string | null
+          payment_status: string | null
+          status: string | null
+          total_amount: number
+          user_id: string | null
+        }
+        Insert: {
+          customer_address: string
+          customer_name: string
+          customer_phone: string
+          event_date: string
+          id?: never
+          notes?: string | null
+          order_date?: string | null
+          payment_status?: string | null
+          status?: string | null
+          total_amount: number
+          user_id?: string | null
+        }
+        Update: {
+          customer_address?: string
+          customer_name?: string
+          customer_phone?: string
+          event_date?: string
+          id?: never
+          notes?: string | null
+          order_date?: string | null
+          payment_status?: string | null
+          status?: string | null
+          total_amount?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
