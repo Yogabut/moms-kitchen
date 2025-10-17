@@ -5,6 +5,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Star, Clock, Heart, Users } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import heroImage from '@/assets/hero-kitchen.jpg';
+import nasiGorengImg from '@/assets/nasi-goreng.jpg';
+import sateAyamImg from '@/assets/sate-ayam.jpg';
+import rendangImg from '@/assets/rendang.jpg';
 
 export default function LandingPage() {
   const features = [
@@ -48,8 +52,12 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative gradient-hero text-white py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10"></div>
+      <section className="relative text-white py-24 md:py-32 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center" 
+          style={{ backgroundImage: `url(${heroImage})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -164,8 +172,16 @@ export default function LandingPage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-soft bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                <span className="text-8xl">🍲</span>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="aspect-square rounded-xl overflow-hidden shadow-soft">
+                  <img src={nasiGorengImg} alt="Nasi Goreng" className="w-full h-full object-cover" />
+                </div>
+                <div className="aspect-square rounded-xl overflow-hidden shadow-soft">
+                  <img src={sateAyamImg} alt="Sate Ayam" className="w-full h-full object-cover" />
+                </div>
+                <div className="col-span-2 aspect-video rounded-xl overflow-hidden shadow-soft">
+                  <img src={rendangImg} alt="Rendang" className="w-full h-full object-cover" />
+                </div>
               </div>
             </motion.div>
           </div>

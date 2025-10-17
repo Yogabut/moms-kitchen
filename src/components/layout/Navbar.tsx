@@ -1,16 +1,41 @@
-import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Menu, Sun, Moon, ChefHat } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Menu, Sun, Moon, ChefHat, Shield, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
 import { useThemeStore } from '@/store/themeStore';
+import { useUserRole } from '@/hooks/useUserRole';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Navbar() {
   const location = useLocation();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const { theme, toggleTheme } = useThemeStore();
+  const { isAdmin } = useUserRole();
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+    toast({ title: "Logged out successfully" });
+  };
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -74,11 +99,28 @@ export default function Navbar() {
               </Button>
             </Link>
 
-            <Link to="/login" className="hidden md:block">
-              <Button variant="default" size="sm">
-                Masuk
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Link to="/admin" className="hidden md:block">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Shield className="h-4 w-4" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+                <Button onClick={handleLogout} variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link to="/login" className="hidden md:block">
+                <Button variant="default" size="sm">
+                  Masuk
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile Menu */}
             <Sheet open={open} onOpenChange={setOpen}>
@@ -103,11 +145,28 @@ export default function Navbar() {
                       {link.label}
                     </Link>
                   ))}
-                  <Link to="/login" onClick={() => setOpen(false)}>
-                    <Button variant="default" className="w-full">
-                      Masuk
-                    </Button>
-                  </Link>
+                  {user ? (
+                    <>
+                      {isAdmin && (
+                        <Link to="/admin" onClick={() => setOpen(false)}>
+                          <Button variant="ghost" className="w-full gap-2 justify-start">
+                            <Shield className="h-4 w-4" />
+                            Admin
+                          </Button>
+                        </Link>
+                      )}
+                      <Button onClick={() => { handleLogout(); setOpen(false); }} variant="ghost" className="w-full gap-2 justify-start">
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <Link to="/login" onClick={() => setOpen(false)}>
+                      <Button variant="default" className="w-full">
+                        Masuk
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
