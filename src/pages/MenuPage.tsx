@@ -55,7 +55,7 @@ export default function MenuPage() {
 
       <main className="flex-1">
         {/* Header */}
-        <section className="gradient-hero text-white py-16">
+        <section className="text-gray-800 py-10">
           <div className="container mx-auto px-4 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -64,7 +64,7 @@ export default function MenuPage() {
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 Menu Kami
               </h1>
-              <p className="text-lg text-white/90 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Pilihan menu terbaik untuk berbagai acara Anda
               </p>
             </motion.div>

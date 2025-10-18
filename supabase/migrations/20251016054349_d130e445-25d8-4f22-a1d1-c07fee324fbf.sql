@@ -10,6 +10,7 @@ CREATE TABLE public.menus (
   created_at timestamp with time zone default now()
 );
 
+
 -- Create orders table
 CREATE TABLE public.orders (
   id bigint generated always as identity primary key,

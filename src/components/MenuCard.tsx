@@ -92,3 +92,4 @@ export default function MenuCard({
     </motion.div>
   );
 }
+
