@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import MenuCard from '@/components/MenuCard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 
 interface Menu {
@@ -51,8 +49,6 @@ export default function MenuPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-
       <main className="flex-1">
         {/* Header */}
         <section className="text-gray-800 py-10">
@@ -71,51 +67,57 @@ export default function MenuPage() {
           </div>
         </section>
 
-        {/* Menu Grid */}
+        {/* Filter Dropdown + Menu Grid */}
         <section className="py-12">
           <div className="container mx-auto px-4">
-            <Tabs
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-              className="w-full"
-            >
-              <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto gap-2 bg-transparent">
-                {categories.map((category) => (
-                  <TabsTrigger
-                    key={category}
-                    value={category}
-                    className="capitalize"
-                  >
-                    {category === 'all' ? 'Semua Menu' : category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            
+            {/* Dropdown Filter */}
+            <div className="flex justify-start mb-8">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Pilih kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category === 'all' ? 'Semua Menu' : category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-              <TabsContent value={selectedCategory} className="mt-8">
-                {loading ? (
-                  <div className="flex justify-center items-center py-20">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            {/* Menu Grid */}
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="border rounded-lg p-4 animate-pulse space-y-3"
+                  >
+                    <div className="h-40 bg-gray-200 rounded-md"></div>
+                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-8 bg-gray-300 rounded-md w-full"></div>
                   </div>
-                ) : filteredMenus.length === 0 ? (
-                  <div className="text-center py-20">
-                    <p className="text-muted-foreground text-lg">
-                      Belum ada menu tersedia
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredMenus.map((menu) => (
-                      <MenuCard key={menu.id} {...menu} />
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                ))}
+              </div>
+            ) : filteredMenus.length === 0 ? (
+              <div className="text-center py-20">
+                <p className="text-muted-foreground text-lg">
+                  Belum ada menu tersedia
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredMenus.map((menu) => (
+                  <MenuCard key={menu.id} {...menu} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

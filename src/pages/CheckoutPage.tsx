@@ -86,6 +86,7 @@ export default function CheckoutPage() {
       toast.success('Pesanan berhasil dibuat!');
       clearCart();
       navigate('/');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error creating order:', error);
       toast.error(error.message || 'Gagal membuat pesanan');
@@ -101,7 +102,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
 
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
@@ -250,7 +250,6 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

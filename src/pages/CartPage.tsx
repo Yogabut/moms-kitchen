@@ -14,7 +14,6 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center py-20">
             <ShoppingBag className="h-20 w-20 mx-auto mb-4 text-muted-foreground" />
@@ -27,14 +26,12 @@ export default function CartPage() {
             </Link>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
 
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
@@ -161,7 +158,6 @@ export default function CartPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

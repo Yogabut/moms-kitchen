@@ -1,10 +1,19 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, Sun, Moon, ChefHat, Shield, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, Sun, Moon, ChefHat, Shield, LogOut, User, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
 import { useThemeStore } from '@/store/themeStore';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +24,7 @@ export default function Navbar() {
   const { theme, toggleTheme } = useThemeStore();
   const { isAdmin } = useUserRole();
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -35,6 +45,11 @@ export default function Navbar() {
     await supabase.auth.signOut();
     navigate('/');
     toast({ title: "Logged out successfully" });
+  };
+
+  const getUserInitials = () => {
+    if (!user?.email) return 'U';
+    return user.email.substring(0, 2).toUpperCase();
   };
 
   const navLinks = [
@@ -101,18 +116,53 @@ export default function Navbar() {
 
             {user ? (
               <>
-                {isAdmin && (
-                  <Link to="/admin" className="hidden md:block">
-                    <Button variant="ghost" size="sm" className="gap-2">
-                      <Shield className="h-4 w-4" />
-                      Admin
-                    </Button>
-                  </Link>
-                )}
-                <Button onClick={handleLogout} variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </Button>
+                {/* Desktop User Dropdown */}
+                <div className="hidden md:block">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                        <Avatar className="h-9 w-9">
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {getUserInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">My Account</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      
+                      {isAdmin && (
+                        <>
+                          <DropdownMenuItem onClick={() => navigate('/admin')}>
+                            <Shield className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
+                      
+                      <DropdownMenuItem onClick={() => navigate('/your-orders')}>
+                        <Package className="mr-2 h-4 w-4" />
+                        <span>My Orders</span>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator />
+                      
+                      <DropdownMenuItem onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </>
             ) : (
               <Link to="/login" className="hidden md:block">
@@ -131,6 +181,25 @@ export default function Navbar() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
                 <div className="flex flex-col gap-4 mt-8">
+                  {/* User Info in Mobile */}
+                  {user && (
+                    <>
+                      <div className="flex items-center gap-3 pb-4 border-b">
+                        <Avatar className="h-12 w-12">
+                          <AvatarFallback className="bg-primary text-primary-foreground text-lg">
+                            {getUserInitials()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <p className="text-sm font-medium">My Account</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {navLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -145,23 +214,42 @@ export default function Navbar() {
                       {link.label}
                     </Link>
                   ))}
+                  
                   {user ? (
                     <>
-                      {isAdmin && (
-                        <Link to="/admin" onClick={() => setOpen(false)}>
-                          <Button variant="ghost" className="w-full gap-2 justify-start">
+                      <div className="border-t pt-4 space-y-2">
+                        {isAdmin && (
+                          <Button 
+                            onClick={() => { navigate('/admin'); setOpen(false); }} 
+                            variant="ghost" 
+                            className="w-full gap-2 justify-start"
+                          >
                             <Shield className="h-4 w-4" />
-                            Admin
+                            Dashboard
                           </Button>
-                        </Link>
-                      )}
-                      <Button onClick={() => { handleLogout(); setOpen(false); }} variant="ghost" className="w-full gap-2 justify-start">
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                      </Button>
+                        )}
+                        
+                        <Button 
+                          onClick={() => { navigate('/your-orders'); setOpen(false); }} 
+                          variant="ghost" 
+                          className="w-full gap-2 justify-start"
+                        >
+                          <Package className="h-4 w-4" />
+                          My Orders
+                        </Button>
+                        
+                        <Button 
+                          onClick={() => { handleLogout(); setOpen(false); }} 
+                          variant="ghost" 
+                          className="w-full gap-2 justify-start text-red-600 hover:text-red-700"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Logout
+                        </Button>
+                      </div>
                     </>
                   ) : (
-                    <Link to="/login" onClick={() => setOpen(false)}>
+                    <Link to="/login" onClick={() => setOpen(false)} className="pt-4 border-t">
                       <Button variant="default" className="w-full">
                         Masuk
                       </Button>

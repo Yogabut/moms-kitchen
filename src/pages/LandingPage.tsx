@@ -10,7 +10,6 @@ import Footer from '@/components/layout/Footer';
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
 
       {/* Hero Section */}
       <Hero />
@@ -27,7 +26,6 @@ export default function LandingPage() {
       {/* CTA Section */}
       <CTA />
 
-      <Footer />
     </div>
   );
 }

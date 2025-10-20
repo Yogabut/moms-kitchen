@@ -20,7 +20,6 @@ export default function LoginPage() {
   const [signupName, setSignupName] = useState('');
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -44,6 +43,7 @@ export default function LoginPage() {
 
       toast.success('Berhasil login!');
       navigate('/');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.message || 'Gagal login');
     } finally {
@@ -75,6 +75,7 @@ export default function LoginPage() {
       setSignupEmail('');
       setSignupPassword('');
       setSignupName('');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.message || 'Gagal membuat akun');
     } finally {

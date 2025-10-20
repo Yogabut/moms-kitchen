@@ -7,7 +7,7 @@ export default function CTA() {
   return (
     <div>
       {/* CTA Section */}
-      <section className="py-16 md:py-24 gradient-hero text-white">
+      <section className="py-16 md:py-24 bg-amber-500 text-gray-100">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
