@@ -23,7 +23,7 @@ export default function About() {
                 </h2>
                 <p className="text-muted-foreground mb-4 leading-relaxed">
                     Dapur Ibu dimulai dari kecintaan terhadap masakan rumahan yang hangat dan penuh cinta. 
-                    Sejak tahun 2013, kami telah melayani ribuan acara, dari ulang tahun, pernikahan, 
+                    Sejak tahun 2023, kami telah melayani ribuan customer, dari catering harian, mingguan, 
                     hingga acara korporat.
                 </p>
                 <p className="text-muted-foreground mb-6 leading-relaxed">

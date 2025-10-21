@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +40,6 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // Check if user is logged in
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -50,7 +48,7 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Create order
+      // Create order in Supabase
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
@@ -61,6 +59,7 @@ export default function CheckoutPage() {
           total_amount: getTotalPrice(),
           event_date: format(eventDate, 'yyyy-MM-dd'),
           notes,
+          status: 'pending',
         })
         .select()
         .single();
@@ -83,10 +82,40 @@ export default function CheckoutPage() {
 
       if (itemsError) throw itemsError;
 
+      // ✅ Kirim pesan WhatsApp otomatis
+      const phoneNumber = '6281945062598'; 
+      const total = formatCurrency(getTotalPrice());
+      const eventDateFormatted = format(eventDate, 'PPP', { locale: id });
+
+      const message = `
+Halo! Saya ingin memesan catering dengan detail berikut:
+
+🧍 Nama: ${customerName}
+📞 No HP: ${customerPhone}
+🏠 Alamat: ${customerAddress}
+📅 Tanggal Acara: ${eventDateFormatted}
+
+🛒 Pesanan:
+${items
+  .map((item) => `- ${item.name} x${item.quantity} = ${formatCurrency(item.price * item.quantity)}`)
+  .join('\n')}
+
+💬 Catatan: ${notes || '-'}
+💰 Total: ${total}
+
+Terima kasih 🙏
+      `.trim();
+
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
       toast.success('Pesanan berhasil dibuat!');
       clearCart();
+
+      // Redirect ke WhatsApp
+      window.open(whatsappUrl, '_blank');
+
       navigate('/');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error creating order:', error);
       toast.error(error.message || 'Gagal membuat pesanan');
@@ -102,18 +131,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
             <form onSubmit={handleSubmit}>
               <div className="grid lg:grid-cols-3 gap-8">
-                {/* Form */}
+                {/* Form Kiri */}
                 <div className="lg:col-span-2 space-y-6">
                   <Card>
                     <CardHeader>
@@ -200,7 +225,7 @@ export default function CheckoutPage() {
                   </Card>
                 </div>
 
-                {/* Order Summary */}
+                {/* Ringkasan Pesanan */}
                 <div className="lg:col-span-1">
                   <Card className="sticky top-20">
                     <CardHeader>
@@ -231,7 +256,7 @@ export default function CheckoutPage() {
 
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full mt-4"
                         size="lg"
                         disabled={loading}
                       >
@@ -249,7 +274,6 @@ export default function CheckoutPage() {
           </motion.div>
         </div>
       </main>
-
     </div>
   );
 }
